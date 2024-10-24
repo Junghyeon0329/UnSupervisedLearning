@@ -25,6 +25,8 @@ for k in range(2, 10):
     silhouette_avgs.append(silhouette_score(X_scaled, kmeans.labels_))
     print(f'클러스터 수: {k} // 실루엣 점수: {silhouette_avgs[-1]}')
 
+optimal_k = silhouette_avgs.index(max(silhouette_avgs)) + 2  # k는 2부터 시작하므로 인덱스에 2를 더해줍니다.
+print(f'최적의 k 값: {optimal_k}')
 
 plt.rcParams['font.family'] = 'sans-serif'  # 기본 폰트 설정
 plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 표시를 위한 설정
@@ -47,8 +49,6 @@ plt.ylabel('silhouette_score')
 plt.tight_layout()
 plt.show()
 
-# 최적의 k로 KMeans 실행 (엘보우 그래프를 참고하여 선택)
-optimal_k = 3  # 최적의 k 값을 선택
 kmeans = KMeans(n_clusters=optimal_k, random_state=7, init='k-means++')
 kmeans.fit(X_scaled)
 
