@@ -20,13 +20,29 @@ feature = data[['Sepal length', 'Sepal width', 'Petal length', 'Petal width']]
 scaler = StandardScaler()
 scaled_feature = scaler.fit_transform(feature)
 
-# DBSCAN 모델 생성 및 학습
-model = DBSCAN(eps=0.5, min_samples=5)
+# NearestNeighbors로 k-distance plot 생성
+neigh = NearestNeighbors(n_neighbors=5)
+nbrs = neigh.fit(scaled_feature)
+distances, indices = nbrs.kneighbors(scaled_feature)
+
+# k-distance plot
+distances = np.sort(distances[:, -1], axis=0)
+plt.plot(distances)
+plt.ylabel('k-distance')
+plt.xlabel('Points sorted by distance')
+plt.title('k-distance Plot to Find eps')
+plt.show()
+
+# DBSCAN 모델을 최적화된 eps 값으로 학습
+# 여기서는 k-distance plot에서 '엘보우' 포인트를 찾아 eps 값을 설정합니다.
+# 예를 들어, 0.3과 같은 값으로 설정해볼 수 있습니다.
+eps_value = 0.3  # k-distance plot에서 적당한 값으로 설정하세요.
+model = DBSCAN(eps=eps_value, min_samples=5)
 predict = pd.DataFrame(model.fit_predict(scaled_feature), columns=['predict'])
 
 # Noise를 'Noise'로 라벨링
 r = pd.concat([pd.DataFrame(scaled_feature, columns=feature.columns), predict], axis=1)
-r['predict'] = r['predict'].map(lambda x: 'Noise' if x == -1 else x)
+r['predict'] = r['predict'].map(lambda x: 'Noise' if x == -1 else f'Cluster {x}')
 
 # Seaborn 스타일 설정
 sns.set(style="whitegrid")
