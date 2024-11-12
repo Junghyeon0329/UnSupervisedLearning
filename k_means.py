@@ -10,6 +10,7 @@ X = iris.data
 y = iris.target
 
 # 데이터 스케일링
+# 평균 편차
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
